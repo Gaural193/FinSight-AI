@@ -44,7 +44,11 @@ class LLMService:
         print("Sending prompt to Gemini LLM...")
         response = model.invoke(prompt)
         
-        return response.content
+        # In newer versions of the SDK, response.content can be a list of blocks instead of a string
+        if isinstance(response.content, list):
+            return "".join([block.get("text", "") if isinstance(block, dict) else str(block) for block in response.content])
+            
+        return str(response.content)
 
 # Create a single instance
 llm = LLMService()
