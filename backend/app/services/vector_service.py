@@ -57,5 +57,32 @@ class VectorDatabase:
         
         return len(points)
 
+    def search(self, query: str, top_k: int = 3) -> list[dict]:
+        """
+        Converts a search query into a vector and finds the top matching chunks in Qdrant.
+        """
+        print(f"Searching Qdrant for: '{query}'")
+        
+        # 1. Convert the question into GPS coordinates (a vector)
+        query_vector = self.model.encode(query).tolist()
+        
+        # 2. Search the database for the closest points
+        search_result = self.client.query_points(
+            collection_name=self.collection_name,
+            query=query_vector,
+            limit=top_k
+        )
+        
+        # 3. Format the results cleanly
+        results = []
+        for hit in search_result.points:
+            results.append({
+                "score": hit.score,
+                "filename": hit.payload.get("filename"),
+                "text": hit.payload.get("text")
+            })
+            
+        return results
+
 # Create a single instance to be used by our API
 vector_db = VectorDatabase()

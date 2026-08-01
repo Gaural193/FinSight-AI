@@ -7,3 +7,5 @@ langchain-text-splitters
 python-multipart
 sentence-transformers
 qdrant-client
+langchain-google-genai
+python-dotenv
